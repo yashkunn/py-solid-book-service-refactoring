@@ -1,32 +1,36 @@
+from typing import Type
+
 from app.book import Book
-from app.serializer import JsonSerializer, XmlSerializer
-from app.printer import ConsolePrint, ReversePrint
-from app.display import ConsoleDisplay, ReverseDisplay
+from app.serializer import JsonSerializer, XmlSerializer, SerializerStrategy
+from app.printer import ConsolePrint, ReversePrint, PrintStrategy
+from app.display import ConsoleDisplay, ReverseDisplay, DisplayStrategy
+
+DISPLAY_STRATEGIES: dict[str, Type[DisplayStrategy]] = {
+    "console": ConsoleDisplay,
+    "reverse": ReverseDisplay,
+}
+
+PRINT_STRATEGIES: dict[str, Type[PrintStrategy]] = {
+    "console": ConsolePrint,
+    "reverse": ReversePrint,
+}
+
+SERIALIZER_STRATEGIES: dict[str, Type[SerializerStrategy]] = {
+    "json": JsonSerializer,
+    "xml": XmlSerializer,
+}
 
 
 def main(book: Book, commands: list[tuple[str, str]]) -> None | str:
     for cmd, method_type in commands:
         if cmd == "display":
-            if method_type == "console":
-                ConsoleDisplay().display(book.content)
-            elif method_type == "reverse":
-                ReverseDisplay().display(book.content)
-            else:
-                raise ValueError(f"Unknown display type: {method_type}")
+            DISPLAY_STRATEGIES[method_type]().display(book.content)
+
         elif cmd == "print":
-            if method_type == "console":
-                ConsolePrint().print_book(book.title, book.content)
-            elif method_type == "reverse":
-                ReversePrint().print_book(book.title, book.content)
-            else:
-                raise ValueError(f"Unknown print type: {method_type}")
+            PRINT_STRATEGIES[method_type]().print_book(book.title, book.content)
+
         elif cmd == "serialize":
-            if method_type == "json":
-                return JsonSerializer().serialize(book.title, book.content)
-            elif method_type == "xml":
-                return XmlSerializer().serialize(book.title, book.content)
-            else:
-                raise ValueError(f"Unknown serialize type: {method_type}")
+            return SERIALIZER_STRATEGIES[method_type]().serialize(book.title, book.content)
 
 
 if __name__ == "__main__":
