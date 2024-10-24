@@ -27,10 +27,16 @@ def main(book: Book, commands: list[tuple[str, str]]) -> None | str:
             DISPLAY_STRATEGIES[method_type]().display(book.content)
 
         elif cmd == "print":
-            PRINT_STRATEGIES[method_type]().print_book(book.title, book.content)
+            PRINT_STRATEGIES[method_type]().print_book(
+                book.title,
+                book.content
+            )
 
         elif cmd == "serialize":
-            return SERIALIZER_STRATEGIES[method_type]().serialize(book.title, book.content)
+            return SERIALIZER_STRATEGIES[method_type]().serialize(
+                book.title,
+                book.content
+            )
 
 
 if __name__ == "__main__":
